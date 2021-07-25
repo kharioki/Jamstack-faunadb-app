@@ -1,36 +1,14 @@
-const axios = require('axios');
-require('dotenv').config();
+const { GET_LINKS_QUERY } = require('./utils/linkQueries');
+const sendQuery = require('./utils/sendQuery');
+const formattedResponse = require('./utils/formattedResponse');
 
 exports.handler = async (event) => {
-  const GET_LINKS_QUERY = `
-    query {
-      allLinks{
-        data{
-          _id
-          name
-          url
-          description
-          archived
-        }
-      }
-    }
-  `;
-
-  const { data } = await axios({
-    url: `${process.env.GRAPHQL_URL}`,
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.FAUNA_SECRET_KEY}`,
-    },
-    data: {
-      query: GET_LINKS_QUERY,
-      variables: {},
-    },
-  });
-  console.log(data);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(data),
-  };
+  try {
+    const res = await sendQuery(GET_LINKS_QUERY);
+    const data = res.allLinks.data;
+    return formattedResponse(200, data);
+  } catch (error) {
+    console.error(error);
+    return formattedResponse(500, { err: 'Something went wrong' });
+  }
 }
