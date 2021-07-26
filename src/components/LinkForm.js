@@ -13,7 +13,6 @@ export default function LinkForm({ refreshLinks }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Name:', name);
 
     const body = { name, url, description };
     try {
